@@ -7,6 +7,19 @@ const MAX_WORDS_PER_BOOK = 20000;
 const MAX_BOOKS = 200;
 const MAX_THUMBNAIL_BYTES = 1_500_000;
 
+function hasBlobAuthentication() {
+  return Boolean(
+    process.env.BLOB_READ_WRITE_TOKEN ||
+    (process.env.BLOB_STORE_ID && process.env.VERCEL_OIDC_TOKEN)
+  );
+}
+
+export function blobAuthenticationMode() {
+  if(process.env.BLOB_READ_WRITE_TOKEN) return 'read-write-token';
+  if(process.env.BLOB_STORE_ID && process.env.VERCEL_OIDC_TOKEN) return 'oidc';
+  return 'none';
+}
+
 export function normalizeIdentity(value) {
   return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
 }
@@ -146,7 +159,7 @@ function blobDatasetVersion(blob) {
 }
 
 export async function getLatestDataset() {
-  if(!process.env.BLOB_READ_WRITE_TOKEN) return baseCatalog();
+  if(!hasBlobAuthentication()) return baseCatalog();
   const result = await list({ prefix: PREFIX, limit: 1000 });
   if(!result.blobs?.length) return baseCatalog();
   const latest = [...result.blobs].sort((a, b) => blobDatasetVersion(b) - blobDatasetVersion(a))[0];
@@ -167,7 +180,7 @@ export function publicCatalog(rawCatalog) {
 }
 
 async function persistCatalog(books, sourceName = '') {
-  if(!process.env.BLOB_READ_WRITE_TOKEN) throw new Error('Vercel Blobが未設定です。');
+  if(!hasBlobAuthentication()) throw new Error('Vercel Blobの認証情報が未設定です。BLOB_STORE_IDとSystem Environment Variables、またはBLOB_READ_WRITE_TOKENを確認してください。');
   const now = new Date();
   const normalizedBooks = books.map(normalizeBook).filter(Boolean).map(book => ({ ...book, total:book.words.length }));
   const dataset = {
@@ -189,7 +202,7 @@ async function persistCatalog(books, sourceName = '') {
 }
 
 export async function manageBook({ bookId = '', action = '' }) {
-  if(!process.env.BLOB_READ_WRITE_TOKEN) throw new Error('Vercel Blobが未設定です。');
+  if(!hasBlobAuthentication()) throw new Error('Vercel Blobの認証情報が未設定です。BLOB_STORE_IDとSystem Environment Variables、またはBLOB_READ_WRITE_TOKENを確認してください。');
   const current = normalizeCatalog(await getLatestDataset().catch(() => baseCatalog()));
   const books = current.books.map(book => ({ ...book, words:normalizeWords(book.words) }));
   const index = books.findIndex(book => book.id === String(bookId || ''));
@@ -252,7 +265,7 @@ async function publishThumbnail(dataUrl, bookName, timestamp) {
 }
 
 export async function publishWords({ rawWords, mode = 'merge', sourceName = '', bookName = '', thumbnailDataUrl = '', thumbnailAction = 'preserve' }) {
-  if(!process.env.BLOB_READ_WRITE_TOKEN) throw new Error('Vercel Blobが未設定です。');
+  if(!hasBlobAuthentication()) throw new Error('Vercel Blobの認証情報が未設定です。BLOB_STORE_IDとSystem Environment Variables、またはBLOB_READ_WRITE_TOKENを確認してください。');
   const cleanBookName = String(bookName || '').trim().slice(0, 100);
   if(!cleanBookName) throw new Error('学習メニューの名前を入力してください。');
 

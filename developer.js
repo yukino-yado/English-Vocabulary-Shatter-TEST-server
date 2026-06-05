@@ -96,8 +96,14 @@ async function loadCurrentData(providedData = null){
         </div>
       </article>
     `).join('') : '<div class="empty-catalog-card"><strong>教材がありません</strong><span>下の読み込み欄から、新しい教材を追加してください。</span></div>';
-    $('currentSource').textContent = '教材ごとに単語追加・更新、アーカイブ、削除を行えます。';
-    setSystemStatus('', '');
+    const authMode = data.blobAuthenticationMode || '';
+    $('currentSource').textContent = authMode === 'oidc'
+      ? 'Vercel Blob接続：OIDC認証。教材ごとに単語追加・更新、アーカイブ、削除を行えます。'
+      : authMode === 'read-write-token'
+        ? 'Vercel Blob接続：Read-write token認証。教材ごとに単語追加・更新、アーカイブ、削除を行えます。'
+        : 'Vercel Blobへ未接続のため、現在は同梱初期データを表示しています。';
+    if(authMode === 'none') setSystemStatus('Vercel Blobの認証情報が未設定です。', 'error');
+    else setSystemStatus('', '');
   }catch(error){
     $('currentBooks').textContent = '未公開';
     $('currentTotal').textContent = '―';

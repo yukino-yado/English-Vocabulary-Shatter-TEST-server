@@ -149,7 +149,15 @@
 Student and developer CSS/JavaScript files are loaded from absolute root paths with version parameters. Vercel cache headers are configured so updated files are reflected immediately after deployment.
 
 
-## ver_2.1 の更新
+## ver_2.2 の更新
 - 教材が1件のみの場合でもアーカイブできます。
 - アーカイブ中の教材は、同じボタンが「アーカイブを解除」に切り替わります。
 - 操作直後に開発者画面へ状態を反映します。
+
+
+## ver_2.2 の更新
+
+- 現在のVercel Blob接続で自動設定される `BLOB_STORE_ID` と `VERCEL_OIDC_TOKEN` に対応しました。
+- 従来の `BLOB_READ_WRITE_TOKEN` にも引き続き対応しています。
+- 開発者画面に、利用中のBlob認証方式を表示します。
+- `VERCEL_OIDC_TOKEN` はSystem Environment Variableのため、Environment Variables一覧に通常表示されません。
