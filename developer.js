@@ -63,14 +63,14 @@ async function requestJson(url, options = {}){
   return data;
 }
 
-async function loadCurrentData(){
+async function loadCurrentData(providedData = null){
   setSystemStatus('現在の生徒用データを確認しています…', 'loading');
   $('currentBooks').textContent = '読込中';
   $('currentTotal').textContent = '―';
   $('currentUpdated').textContent = '―';
   $('currentBookList').innerHTML = '';
   try{
-    const data = await requestJson('/api/words?includeArchived=1', { cache:'no-store' });
+    const data = providedData || await requestJson(`/api/words?includeArchived=1&_=${Date.now()}`, { cache:'no-store' });
     const books = Array.isArray(data.books) ? data.books : [{ name:data.bookName || '基本英単語', total:data.total || data.words?.length || 0, updatedAt:data.updatedAt, sourceName:data.sourceName, thumbnailUrl:data.thumbnailUrl || data.thumbnailDataUrl }];
     const totalWords = Number(data.totalWords || books.reduce((sum, book) => sum + Number(book.total || book.words?.length || 0), 0));
     const archivedCount = books.filter(book => book.archived).length;
@@ -90,7 +90,7 @@ async function loadCurrentData(){
           <small>${book.sourceName ? `反映元：${escapeHtml(book.sourceName)}` : ''}${book.updatedAt ? `　更新：${escapeHtml(formatDate(book.updatedAt))}` : ''}</small>
           <div class="book-manage-actions">
             <button class="ghost-btn book-action-btn" type="button" data-action="edit" data-book-id="${escapeHtml(book.id || '')}" data-book-name="${escapeHtml(book.name || '')}">単語を追加・更新</button>
-            <button class="ghost-btn book-action-btn" type="button" data-action="${book.archived ? 'restore' : 'archive'}" data-book-id="${escapeHtml(book.id || '')}" data-book-name="${escapeHtml(book.name || '')}">${book.archived ? '公開に戻す' : 'アーカイブ'}</button>
+            <button class="ghost-btn book-action-btn" type="button" data-action="${book.archived ? 'restore' : 'archive'}" data-book-id="${escapeHtml(book.id || '')}" data-book-name="${escapeHtml(book.name || '')}">${book.archived ? 'アーカイブを解除' : 'アーカイブ'}</button>
             <button class="ghost-btn book-action-btn danger" type="button" data-action="delete" data-book-id="${escapeHtml(book.id || '')}" data-book-name="${escapeHtml(book.name || '')}">削除</button>
           </div>
         </div>
@@ -315,21 +315,24 @@ async function managePublishedBook(action, bookId, bookName){
     setMessage('parseMessage', `「${bookName}」へ追加・更新する単語ファイルを選択してください。`, 'success');
     return;
   }
-  const actionLabel = action === 'delete' ? '削除' : action === 'archive' ? 'アーカイブ' : '公開に戻す';
+  const actionLabel = action === 'delete' ? '削除' : action === 'archive' ? 'アーカイブ' : 'アーカイブを解除';
   const detail = action === 'delete' ? 'この操作は元に戻せません。' : action === 'archive' ? '生徒用アプリから非表示になります。' : '生徒用アプリへ再表示します。';
   if(!confirm(`「${bookName}」を${actionLabel}しますか？
 ${detail}`)) return;
+  const buttons = [...document.querySelectorAll(`[data-book-id="${CSS.escape(bookId)}"]`)];
+  buttons.forEach(button => button.disabled = true);
   setSystemStatus(`「${bookName}」を${actionLabel}しています…`, 'loading');
   try{
-    await requestJson('/api/admin-book-action', {
+    const result = await requestJson('/api/admin-book-action', {
       method:'POST',
       headers:{ 'Content-Type':'application/json' },
       body:JSON.stringify({ action, bookId }),
     });
+    await loadCurrentData(result);
     setSystemStatus(`「${bookName}」を${actionLabel}しました。`, 'success');
-    await loadCurrentData();
   }catch(error){
     setSystemStatus(error.message || '教材の操作に失敗しました。', 'error');
+    buttons.forEach(button => button.disabled = false);
   }
 }
 

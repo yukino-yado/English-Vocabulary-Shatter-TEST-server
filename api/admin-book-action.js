@@ -9,7 +9,17 @@ export default {
       const action = ['archive','restore','delete'].includes(body?.action) ? body.action : '';
       if(!action || !body?.bookId) return json({ error:'教材と操作内容を指定してください。' }, 400);
       const result = await manageBook({ bookId:body.bookId, action });
-      return json({ ok:true, action, affectedBook:result.affectedBook, totalBooks:result.totalBooks, totalWords:result.totalWords, updatedAt:result.updatedAt });
+      const books = result.books.map(book => ({
+        id:book.id,
+        name:book.name,
+        total:book.total,
+        sourceName:book.sourceName,
+        updatedAt:book.updatedAt,
+        thumbnailUrl:book.thumbnailUrl,
+        archived:Boolean(book.archived),
+        archivedAt:book.archivedAt || null,
+      }));
+      return json({ ok:true, action, affectedBook:result.affectedBook, books, totalBooks:result.totalBooks, totalWords:result.totalWords, updatedAt:result.updatedAt });
     } catch(error) {
       return json({ error:error?.message || '教材の操作に失敗しました。' }, 500);
     }

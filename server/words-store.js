@@ -137,12 +137,20 @@ export function normalizeCatalog(raw) {
   return baseCatalog();
 }
 
+function blobDatasetVersion(blob) {
+  const source = String(blob?.pathname || blob?.url || '');
+  const match = source.match(/words-(\d{10,})/);
+  const pathnameVersion = match ? Number(match[1]) : 0;
+  const uploadedVersion = new Date(blob?.uploadedAt || 0).getTime() || 0;
+  return Math.max(pathnameVersion, uploadedVersion);
+}
+
 export async function getLatestDataset() {
   if(!process.env.BLOB_READ_WRITE_TOKEN) return baseCatalog();
   const result = await list({ prefix: PREFIX, limit: 1000 });
   if(!result.blobs?.length) return baseCatalog();
-  const latest = [...result.blobs].sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))[0];
-  const response = await fetch(`${latest.url}?v=${encodeURIComponent(latest.uploadedAt)}`, { cache:'no-store' });
+  const latest = [...result.blobs].sort((a, b) => blobDatasetVersion(b) - blobDatasetVersion(a))[0];
+  const response = await fetch(`${latest.url}?v=${encodeURIComponent(blobDatasetVersion(latest))}`, { cache:'no-store' });
   if(!response.ok) throw new Error('公開済み単語データを読み込めませんでした。');
   return normalizeCatalog(await response.json());
 }
@@ -198,7 +206,10 @@ export async function manageBook({ bookId = '', action = '' }) {
     throw new Error('操作内容が正しくありません。');
   }
   const result = await persistCatalog(books, `developer:${action}`);
-  return { ...result, affectedBook:{ id:target.id, name:target.name }, action };
+  const affected = action === 'delete'
+    ? { id:target.id, name:target.name, deleted:true, archived:Boolean(target.archived) }
+    : result.books.find(book => book.id === target.id) || { id:target.id, name:target.name };
+  return { ...result, affectedBook:affected, action };
 }
 
 function mergeWords(existingWords, incomingWords) {

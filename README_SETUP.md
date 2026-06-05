@@ -144,8 +144,12 @@
 - 生徒用の「学習の仕方」に、英→日・日→英の出題方向設定を追加しました。
 
 
-## ver 1.9 の変更
-- 開発者画面から教材へ単語を追加・更新できます。
-- 教材をアーカイブすると、生徒用アプリから非表示になります。公開に戻す操作も可能です。
-- 教材を削除できます。削除は取り消せません。すべての教材をアーカイブ・削除した場合、生徒用には「公開中の教材がありません」と表示されます。
-- 生徒用ゲーム画面では上部タイトルを非表示にし、選択肢を3列化してスクロール量を減らしています。
+## Version 2.0 CSS update
+
+Student and developer CSS/JavaScript files are loaded from absolute root paths with version parameters. Vercel cache headers are configured so updated files are reflected immediately after deployment.
+
+
+## ver_2.1 の更新
+- 教材が1件のみの場合でもアーカイブできます。
+- アーカイブ中の教材は、同じボタンが「アーカイブを解除」に切り替わります。
+- 操作直後に開発者画面へ状態を反映します。
