@@ -70,4 +70,4 @@ dialog{max-width:560px;width:calc(100% - 32px);padding:26px;border:0;border-radi
 
 .empty-catalog-card{grid-column:1/-1;display:grid;gap:7px;padding:20px;border:1px dashed var(--line);border-radius:18px;background:#fff;text-align:center}.empty-catalog-card span{color:var(--soft);font-size:13px}
 
-/* build: english_vocab_shatte_ver_2.2 */
+/* build: english_vocab_shatte_ver_2.3 */

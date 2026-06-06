@@ -33,7 +33,7 @@
 1. Vercelで対象プロジェクトを開く
 2. `Storage` を開く
 3. `Blob` のストアを **Public** で作成し、対象プロジェクトへ接続
-4. `BLOB_READ_WRITE_TOKEN` がプロジェクトの環境変数へ追加されたことを確認
+4. 接続後、`BLOB_STORE_ID` がプロジェクトの環境変数へ追加されたことを確認
 5. 必要に応じて再デプロイ
 
 ### 3. 学習メニューを追加
@@ -149,7 +149,7 @@
 Student and developer CSS/JavaScript files are loaded from absolute root paths with version parameters. Vercel cache headers are configured so updated files are reflected immediately after deployment.
 
 
-## ver_2.2 の更新
+## ver_2.1 の更新
 - 教材が1件のみの場合でもアーカイブできます。
 - アーカイブ中の教材は、同じボタンが「アーカイブを解除」に切り替わります。
 - 操作直後に開発者画面へ状態を反映します。
@@ -161,3 +161,12 @@ Student and developer CSS/JavaScript files are loaded from absolute root paths w
 - 従来の `BLOB_READ_WRITE_TOKEN` にも引き続き対応しています。
 - 開発者画面に、利用中のBlob認証方式を表示します。
 - `VERCEL_OIDC_TOKEN` はSystem Environment Variableのため、Environment Variables一覧に通常表示されません。
+
+
+## ver_2.3 の更新
+
+- 現行Vercel BlobのOIDC接続方式へ正式対応しました。
+- `VERCEL_OIDC_TOKEN` は実行時のリクエストコンテキストから `@vercel/blob` SDKが自動取得するため、アプリ側では直接確認しません。
+- `BLOB_STORE_ID` が存在する場合はOIDC接続として扱い、`list`・`put`などの認証処理をSDKへ任せます。
+- 従来の `BLOB_READ_WRITE_TOKEN` 接続にも対応しています。
+- 開発者画面で誤って「Vercel Blobの認証情報が未設定」と表示される問題を修正しました。

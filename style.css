@@ -489,4 +489,4 @@ body.quiz-active .quiz-actions .primary-btn{padding:10px 24px}
 @media(max-width:620px){body.quiz-active{padding:7px}body.quiz-active .quiz-card{padding:12px}body.quiz-active .choices{grid-template-columns:1fr}body.quiz-active .word-stage{min-height:112px}}
 @media(max-height:760px) and (min-width:901px){body.quiz-active .word-stage{min-height:105px;margin:7px 0 3px}body.quiz-active .word{font-size:clamp(34px,5.5vw,56px);margin-top:6px}body.quiz-active .choice{padding:7px 10px}body.quiz-active .feedback{font-size:16px;min-height:22px}}
 
-/* build: english_vocab_shatte_ver_2.2 */
+/* build: english_vocab_shatte_ver_2.3 */
