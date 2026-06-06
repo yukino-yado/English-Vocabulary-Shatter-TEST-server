@@ -70,4 +70,10 @@ dialog{max-width:560px;width:calc(100% - 32px);padding:26px;border:0;border-radi
 
 .empty-catalog-card{grid-column:1/-1;display:grid;gap:7px;padding:20px;border:1px dashed var(--line);border-radius:18px;background:#fff;text-align:center}.empty-catalog-card span{color:var(--soft);font-size:13px}
 
-/* build: english_vocab_shatte_ver_2.3 */
+
+/* v2.4: 初期教材を含むタイトル・サムネイル変更 */
+.metadata-update-box{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:14px 0 0;padding:15px 16px;border:1px solid rgba(125,220,255,.35);border-radius:18px;background:linear-gradient(135deg,rgba(125,220,255,.12),rgba(165,140,255,.1))}
+.metadata-update-box strong{display:block;font-size:16px}.metadata-update-box p{margin:5px 0 0;color:var(--soft);line-height:1.5}.metadata-update-box .primary-btn,.metadata-update-box .ghost-btn{white-space:nowrap}
+@media(max-width:720px){.metadata-update-box{align-items:stretch;flex-direction:column}.metadata-update-box .primary-btn,.metadata-update-box .ghost-btn{width:100%}}
+
+/* build: english_vocab_shatte_ver_2.4 */

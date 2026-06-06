@@ -163,10 +163,15 @@ Student and developer CSS/JavaScript files are loaded from absolute root paths w
 - `VERCEL_OIDC_TOKEN` はSystem Environment Variableのため、Environment Variables一覧に通常表示されません。
 
 
-## ver_2.3 の更新
+## ver_2.4 の更新
 
 - 現行Vercel BlobのOIDC接続方式へ正式対応しました。
 - `VERCEL_OIDC_TOKEN` は実行時のリクエストコンテキストから `@vercel/blob` SDKが自動取得するため、アプリ側では直接確認しません。
 - `BLOB_STORE_ID` が存在する場合はOIDC接続として扱い、`list`・`put`などの認証処理をSDKへ任せます。
 - 従来の `BLOB_READ_WRITE_TOKEN` 接続にも対応しています。
 - 開発者画面で誤って「Vercel Blobの認証情報が未設定」と表示される問題を修正しました。
+
+
+## ver_2.4 追加
+
+開発者画面の教材一覧から「タイトル・サムネイル変更」を押すと、同梱初期データを含む既存教材の表示名とサムネイルだけを更新できます。単語ファイルの再アップロードは不要です。

@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <title>英単語シャッター｜開発者メニュー</title>
-  <link rel="stylesheet" href="/developer.css?v=2.3.0" />
+  <link rel="stylesheet" href="/developer.css?v=2.4.0" />
 </head>
 <body>
   <header class="dev-header">
@@ -89,6 +89,16 @@
 
         <p id="parseMessage" class="message"></p>
 
+        <div class="metadata-update-box hidden" id="metadataUpdateBox">
+          <div>
+            <strong>教材情報を変更中</strong>
+            <p id="metadataEditTarget">選択中の教材名とサムネイルだけを更新できます。</p>
+          </div>
+          <button id="metadataUpdateBtn" class="primary-btn" type="button">教材情報だけ更新する</button>
+          <button id="metadataCancelBtn" class="ghost-btn" type="button">やめる</button>
+        </div>
+        <p id="metadataMessage" class="message"></p>
+
         <div id="previewArea" class="preview-area hidden">
           <div class="preview-summary">
             <div><span>学習メニュー名</span><strong id="previewBookName">未入力</strong></div>
@@ -159,6 +169,6 @@
   </dialog>
 
   <noscript><div class="noscript-warning">JavaScriptが無効になっています。ブラウザのJavaScriptを有効にしてください。</div></noscript>
-  <script src="/developer.js?v=2.3.0" defer></script>
+  <script src="/developer.js?v=2.4.0" defer></script>
 </body>
 </html>

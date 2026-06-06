@@ -207,20 +207,38 @@ async function persistCatalog(books, sourceName = '') {
   return { ...dataset, blobUrl:blob.url };
 }
 
-export async function manageBook({ bookId = '', action = '' }) {
+export async function manageBook({ bookId = '', action = '', bookName = '', thumbnailAction = 'preserve', thumbnailDataUrl = '' }) {
   if(!hasBlobConfiguration()) throw new Error('Vercel Blobがプロジェクトへ接続されていません。BLOB_STORE_IDを確認してください。');
   const current = normalizeCatalog(await getLatestDataset().catch(() => baseCatalog()));
   const books = current.books.map(book => ({ ...book, words:normalizeWords(book.words) }));
   const index = books.findIndex(book => book.id === String(bookId || ''));
   if(index < 0) throw new Error('指定された教材が見つかりません。');
   const target = books[index];
+  const now = new Date();
   if(action === 'archive') {
     if(target.archived) throw new Error('この教材はすでにアーカイブされています。');
-    books[index] = { ...target, archived:true, archivedAt:new Date().toISOString(), updatedAt:new Date().toISOString() };
+    books[index] = { ...target, archived:true, archivedAt:now.toISOString(), updatedAt:now.toISOString() };
   } else if(action === 'restore') {
-    books[index] = { ...target, archived:false, archivedAt:null, updatedAt:new Date().toISOString() };
+    books[index] = { ...target, archived:false, archivedAt:null, updatedAt:now.toISOString() };
   } else if(action === 'delete') {
     books.splice(index, 1);
+  } else if(action === 'updateMeta') {
+    const cleanBookName = String(bookName || '').trim().slice(0, 100);
+    if(!cleanBookName) throw new Error('教材名を入力してください。');
+    const nextIdentity = normalizeIdentity(cleanBookName);
+    const duplicate = books.find((book, bookIndex) => bookIndex !== index && normalizeIdentity(book.name) === nextIdentity);
+    if(duplicate) throw new Error('同じ名前の教材がすでにあります。別の名前を指定してください。');
+    let nextThumbnail = target.thumbnailUrl || '';
+    if(thumbnailAction === 'replace') nextThumbnail = await publishThumbnail(thumbnailDataUrl, cleanBookName, now);
+    if(thumbnailAction === 'remove') nextThumbnail = '';
+    books[index] = {
+      ...target,
+      name:cleanBookName,
+      thumbnailUrl:nextThumbnail,
+      updatedAt:now.toISOString(),
+      total:target.words.length,
+      words:target.words,
+    };
   } else {
     throw new Error('操作内容が正しくありません。');
   }
